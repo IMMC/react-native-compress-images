@@ -1,0 +1,22 @@
+{
+  "name": "react-native-compress-images",
+  "version": "0.0.3",
+  "description": "react-native图片压缩组件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IMMC/react-native-compress-images.git"
+  },
+  "author": "cjp",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IMMC/react-native-compress-images/issues"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.0"
+  },
+  "homepage": "https://github.com/IMMC/react-native-compress-images#readme"
+}
