@@ -8,7 +8,9 @@ const optionsTypes = {
     maxWidth: PropTypes.number,
     maxHeight: PropTypes.number,
     quality: PropTypes.number,
-    urlList: PropTypes.array
+    urlList: PropTypes.array,
+    saveImages: PropTypes.bool,
+    resultBase64: PropTypes.bool
 };
 // const CompressImage = NativeModules.CompressImage;
 export default function CompressImages(options) {
