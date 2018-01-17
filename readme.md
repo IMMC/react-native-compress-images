@@ -10,6 +10,7 @@ yarn add react-native-compress-images
 react-native link
 ## Usage
 1, import CompressImages from 'react-native-compress-images';
+
 2, 
 ```
 CompressImages({
