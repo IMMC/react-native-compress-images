@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by chenjinpei on 2018/1/15.
+ * Created by Admin on 2018/1/15.
  */
 
 public class CompressImagePackage implements ReactPackage{

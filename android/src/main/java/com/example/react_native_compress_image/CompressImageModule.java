@@ -1,10 +1,6 @@
 package com.example.react_native_compress_image;
-
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Path;
-import android.os.Environment;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -16,9 +12,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
-
-import java.io.File;
-import java.io.FileOutputStream;
 
 /**
  * Created by chenjinpei on 2018/1/15.
@@ -37,11 +30,15 @@ public class CompressImageModule extends ReactContextBaseJavaModule{
     @ReactMethod
     public void compressSize(ReadableMap Options, Promise promise) {
         WritableArray resultList = new WritableNativeArray();
+        WritableArray base64List = new WritableNativeArray();
         float maxHeight = 600;
         float maxWidth = 380;
         int quality = 60;
+        Boolean saveImages = true; // 设置是否保存图片
+        Boolean resultBase64 = false; // 设置是否返回base64
         String status = "success";
         String msg = "";
+        UtilFunction util = new UtilFunction();
         // 判断是否包含最大宽度
         if (Options.hasKey("maxWidth")) {
             maxWidth = Options.getInt("maxWidth");
@@ -87,71 +84,41 @@ public class CompressImageModule extends ReactContextBaseJavaModule{
                 } else {
                     saveName = "compressCatch"+i+".png";
                 }
-                String catchPath = saveBitmapToFile(getReactApplicationContext(),saveName, bitmap);
-                resultList.pushString(catchPath);
+                // String catchPath = saveBitmapToFile(getReactApplicationContext(),saveName, bitmap);
+                if (saveImages) {
+                    String catchPath =  util.saveBitmapToFile(getReactApplicationContext(),saveName, bitmap, quality);
+                    resultList.pushString(catchPath);
+                } else {
+                    String imgBase64 = util.bitmapToBase64(saveName, bitmap, quality);
+                    base64List.pushString(imgBase64);
+                }
+                //需要返回base64
+                if (resultBase64 && saveImages) {
+                    String imgBase64 = util.bitmapToBase64(saveName, bitmap, quality);
+                    base64List.pushString(imgBase64);
+                }
             }
         } else {
             status = "error";
             msg = "must have urlList";
         }
+        // 确定返回值
         WritableMap map = Arguments.createMap();
-        map.putArray("data", resultList);
+        map.putString("status", status);
+        if (status.equals("error")) {
+            map.putString("errorMsg", msg);
+        } else {
+            // 设置返回值
+            if (saveImages) {
+                map.putArray("urlList", resultList);
+            } else {
+                map.putArray("base64List", base64List);
+            }
+            if (resultBase64 && saveImages) {
+                map.putArray("base64List", base64List);
+            }
+        }
         promise.resolve(map);
     }
-    /*
-    * ***************辅助函数，保存,bitmap到文件夹**********
-    * */
-    public String saveBitmapToFile(Context context, String fileName , Bitmap bitmap) {
-        FileOutputStream fOut = null;
-        try {
-            File file = null;
-            String fileDstPath = "";
-            // 判断是否挂载SD卡
-            if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-                // 保存到sd卡的路径
-                fileDstPath = Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + "compressCatch" + File.separator + fileName;
-                // 判断父级目录是否存在
-                File homeDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + File.separator + "compressCatch" + File.separator);
-                if (!homeDir.exists()) {
-                    homeDir.mkdirs();
-                }
-            } else {
-                // 保存到file目录
-                fileDstPath = context.getFilesDir().getAbsolutePath()
-                        + File.separator + "compressCatch" + File.separator + fileName;
 
-                File homeDir = new File(context.getFilesDir().getAbsolutePath()
-                        + File.separator + "compressCatch" + File.separator);
-                if (!homeDir.exists()) {
-                    homeDir.mkdir();
-                }
-            }
-            // 新建文件
-            file = new File(fileDstPath);
-            // 文件存在就删除
-            if (file.exists()) {
-                file.delete();
-            }
-            // 保存文件
-            fOut = new FileOutputStream(file);
-            if (fileDstPath.endsWith("jpg")) {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 60, fOut);
-            } else {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 60, fOut);
-            }
-            fOut.flush();
-            fOut.close();
-            bitmap.recycle();
-            // 返回路径
-            return fileDstPath;
-        } catch (Exception e) {
-            String sOut = "";
-            StackTraceElement[] trace = e.getStackTrace();
-            for (StackTraceElement s : trace) {
-                sOut += "\tat " + s + "\r\n";
-            }
-            return "error";
-        }
-    }
 }

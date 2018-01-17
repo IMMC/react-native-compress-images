@@ -14,7 +14,7 @@ react-native link
 2, 
 ```
 CompressImages({
-				urlList: ['storage/emulated/0/Pictures/image-b1ae0ff3-c014-4e37-b510-f00d6ec88b08.jpg']
+			urlList: ['storage/emulated/0/Pictures/image-b1ae0ff3-c014-4e37-b510-f00d6ec88b08.jpg']
               }).then((res) => {
                   console.log(res);
               })
