@@ -53,6 +53,13 @@ public class CompressImageModule extends ReactContextBaseJavaModule{
                 quality = Options.getInt("quality");
             }
         }
+        // 判断是否有
+        if (Options.hasKey("saveImages")) {
+            saveImages = Options.getBoolean("saveImages");
+        }
+        if (Options.hasKey("resultBase64")) {
+            resultBase64 = Options.getBoolean("resultBase64");
+        }
         // 判断是否有路径参数列表
         if (Options.hasKey("urlList")) {
             ReadableArray urlList = Options.getArray("urlList");
