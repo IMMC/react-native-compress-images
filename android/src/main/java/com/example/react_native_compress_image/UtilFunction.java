@@ -104,4 +104,28 @@ public class UtilFunction {
         }
         return result;
     }
+    /*
+    * ************获得路径*************
+    * */
+    public static String getSaveUrl (Context context) {
+        String savePath = null;
+        // 判断是否挂载SD卡
+        if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+            // 判断父级目录是否存在
+            savePath = Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + File.separator + "compressCatch" + File.separator;
+            File homeDir = new File(savePath);
+            if (!homeDir.exists()) {
+                homeDir.mkdirs();
+            }
+        } else {
+            savePath = context.getFilesDir().getAbsolutePath()
+                    + File.separator + "compressCatch" + File.separator;
+            File homeDir = new File(savePath);
+            if (!homeDir.exists()) {
+                homeDir.mkdir();
+            }
+        }
+        return savePath;
+    }
 }

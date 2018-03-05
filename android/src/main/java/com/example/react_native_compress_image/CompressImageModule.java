@@ -13,6 +13,12 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 
+import java.io.File;
+import java.util.ArrayList;
+
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
+
 /**
  * Created by chenjinpei on 2018/1/15.
  */
@@ -25,6 +31,61 @@ public class CompressImageModule extends ReactContextBaseJavaModule{
     @Override
     public String getName() {
         return "CompressImages";
+    }
+    // 以质量压缩
+    @ReactMethod
+    public void compressQuality(ReadableMap Options, final Promise promise) {
+        final WritableArray resultList = new WritableNativeArray();
+        // 判断是否有路径参数列表
+        if (Options.hasKey("urlList")) {
+            ReadableArray urlList = Options.getArray("urlList");
+            final ArrayList<String> photos = new ArrayList<>();
+            // 循环遍历。添加图片
+            for (int i = 0; i < urlList.size(); i++) {
+                photos.add(urlList.getString(i));
+            }
+            // 调用Luban接口压缩图片
+            Luban.with(getReactApplicationContext())
+                   .load(photos)
+                    .ignoreBy(100)
+                    .setTargetDir(UtilFunction.getSaveUrl(getReactApplicationContext()))
+                    .setCompressListener(new OnCompressListener() {
+                        @Override
+                        public void onStart() {
+
+                        }
+                        // 成功回调
+                        @Override
+                        public void onSuccess(File file) {
+                            // 保存路径
+                            resultList.pushString(file.getAbsolutePath());
+                            // 判断是否对所有图片执行了操作
+                            if (resultList.size() == photos.size()) {
+                                WritableMap map = Arguments.createMap();
+                                map.putString("status", "success");
+                                map.putArray("urlList", resultList);
+                                promise.resolve(map);
+                            }
+                        }
+                        // 发生错误
+                        @Override
+                        public void onError(Throwable e) {
+                            resultList.pushString(e.toString());
+                            // 判断是否对所有图片执行了操作
+                            if (resultList.size() == photos.size()) {
+                                WritableMap map = Arguments.createMap();
+                                map.putString("status", "success");
+                                map.putArray("urlList", resultList);
+                                promise.resolve(map);
+                            }
+                        }
+                    }).launch();
+        } else {
+            WritableMap map = Arguments.createMap();
+            map.putString("status", "success");
+            map.putString("errorMsg", "must have urlList");
+            promise.resolve(map);
+        }
     }
     // 以尺寸压缩
     @ReactMethod
