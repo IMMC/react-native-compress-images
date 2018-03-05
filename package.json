@@ -1,6 +1,6 @@
 {
   "name": "react-native-compress-images",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "react-native图片压缩组件",
   "main": "index.js",
   "scripts": {
